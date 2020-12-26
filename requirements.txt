@@ -1,4 +1,5 @@
-Cython==0.29.21
+cython==0.29.21
+numpy==1.19.1
 pystan==2.17.1.0
 fbprophet==0.7.1
 pandas==1.1.3 
