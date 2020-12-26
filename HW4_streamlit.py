@@ -1,20 +1,9 @@
-from sklearn.model_selection import train_test_split
 # prophet
 from fbprophet import Prophet
-from fbprophet.plot import plot_plotly, plot_components_plotly, plot_cross_validation_metric
-from fbprophet.diagnostics import cross_validation, performance_metrics
+from fbprophet.plot import plot_plotly
 
 import streamlit as st
-import pandas as pd
-import altair as alt
 
-
-
-import joblib
-
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import seaborn as sns
 import numpy as np
 import pandas as pd
 import datetime as DT
