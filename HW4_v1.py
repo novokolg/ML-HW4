@@ -123,7 +123,7 @@ def main():
     st.write('You selected:', option)
 
     if option == 'Own dataset':
-        filename = st.file_uploader("Choose file for loading. \n Please, note that the CSV file should contain exactly ",
+        filename = st.file_uploader("Choose file for loading. \n Please, note that the CSV file should contain exactly 2 columns: target column and date column ",
                                     folder="my_folder", type=("csv", "txt"))
         if filename is not None:
             dlm = st.sidebar.text_input('Set up delimeter:', ';')
