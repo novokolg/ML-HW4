@@ -14,15 +14,14 @@ def data_loading(filename, dlm, sp):
 
 def use_own_dataset(df):
     st.write("Data for modeling:")
-    st.write(df)
+    st.write(df.head())
     if len(df.columns) != 2:
         st.write('Error: only 2 columns were expected')
         st.stop()
-    date_column = st.selectbox("Choose column with date ", df.columns)
+    date_column = st.sidebar.selectbox("Choose column with date ", df.columns)
     if df.columns[0] == date_column:
         target_column = df.columns[1]
     else:
-        target_column = df.columns[0]
         target_column = df.columns[0]
 
 #    df[date_column] = df[date_column].apply(lambda x: DT.datetime.strptime(x,'%Y-%m-%d').date())
@@ -34,15 +33,15 @@ def use_own_dataset(df):
 def use_default_dataset():
     df = pd.read_csv('https://raw.githubusercontent.com/selva86/datasets/master/MarketArrivals.csv')
     df['ds'] = df.date.apply(lambda x: DT.datetime.strptime(x, '%B-%Y').date())
-    city_to_filter = "MUMBAI"
     df.rename(columns={'quantity': 'y'}, inplace=True)
-    # df = df.set_index('ds')
     df = df.sort_values(['city', 'ds'])
     city_to_filter = "MUMBAI"
     df = df[df.city == city_to_filter]
+    df = df.set_index('ds')
+    df = df.reset_index()
     df = df.drop(['market', 'month', 'state', 'date', 'year', 'city', 'priceMin', 'priceMax', 'priceMod'], axis=1)
     st.write("Data for modeling:")
-    st.write(df)
+    st.write(df.head())
     return df
 
 
@@ -92,13 +91,13 @@ def forecasting(data, forecasting_periods, period_freq, daily_season, weekly_sea
     val = forecast.set_index('ds')[['yhat', 'yhat_lower', 'yhat_upper']].join(data.set_index('ds'))
     val['e'] = val['y'] - val['yhat']
     val['p'] = 100 * val['e'] / val['y']
-    accuracy_mape = "MAPE, %: " + str(np.mean(abs(val[-forecasting_periods:]['p'])))
+    accuracy_mape = "MAPE% for last " + str(forecasting_periods) + " perions: " + str(np.mean(abs(val[-forecasting_periods:]['p'])))
 
     model = Prophet(daily_seasonality = daily_season, weekly_seasonality = weekly_season).fit(data)
     future = model.make_future_dataframe(periods=forecasting_periods,  freq = period_freq)
 #    st.write(future)
     forecast = model.predict(future)
-    st.write("Forecast for future periods:")
+    st.title("Forecast for future periods:")
 
     forecast.rename(columns={'yhat': 'Predictions'}, inplace=True)
     st.write(forecast.set_index('ds')[['Predictions']][-forecasting_periods:])
@@ -112,6 +111,8 @@ def forecasting(data, forecasting_periods, period_freq, daily_season, weekly_sea
 #    fig.update_traces(mode='lines', selector=dict(name='Actual'))
 #    fig.update_layout(title_text=accuracy_mape)
 #    fig.show()
+    st.write(accuracy_mape)
+    st.write("(test - last " + str(forecasting_periods) + " points in dataset, train - all others)")
 
     chart_data = pd.DataFrame(val, columns=['Predictions', 'Actuals'])
     st.line_chart(chart_data)
@@ -146,7 +147,7 @@ def main():
         option2 = st.sidebar.selectbox('',('Yearly', 'Monthly', 'Weekly', 'Daily'))
         period_freq, daily_season, weekly_season = data_granularity_processing(option2)
 
-        forecasting_periods = st.sidebar.slider('How many datapoint you want to forecast:', 1, 365)
+        forecasting_periods = st.sidebar.slider('How many datapoint you want to forecast:', 1, len(data)-2)
 
         forecasting(data, forecasting_periods, period_freq, daily_season, weekly_season)
     else:
