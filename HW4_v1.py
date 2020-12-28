@@ -100,12 +100,12 @@ def forecasting(data, forecasting_periods, period_freq, daily_season, weekly_sea
     st.write("Forecast for future periods:")
     st.write(forecast.set_index('ds')[['yhat']][-forecasting_periods:])
 
-    if st.button('Make a chart with forecasted values and data validation'):
-        fig = plot_plotly(model, forecast, trend=True, changepoints=True, xlabel='date', ylabel='quantities', figsize=(1200,800))
+    st.write('Make a chart with forecasted values and data validation'):
+    fig = plot_plotly(model, forecast, trend=True, changepoints=True, xlabel='date', ylabel='quantities', figsize=(1200,800))
                 # custom styles
-        fig.update_traces(mode='lines', selector=dict(name='Actual'))
-        fig.update_layout(title_text=accuracy_mape)
-        fig.show()
+    fig.update_traces(mode='lines', selector=dict(name='Actual'))
+    fig.update_layout(title_text=accuracy_mape)
+    fig.show()
 
 def main():
     st.title('This tool helps you to make brief forecast for time series using fbprophet:')
