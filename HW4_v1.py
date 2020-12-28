@@ -143,8 +143,7 @@ def main():
     if data is not None:
 #        forecasting_periods, period_freq, daily_season, weekly_season = preparing_for_forecasting()
         st.sidebar.title('Please choose a granularity of your data:')
-        option2 = st.sidebar.selectbox('Do you like to use your own dataset or default dataset?',
-                                           ('Yearly', 'Monthly', 'Weekly', 'Daily'))
+        option2 = st.sidebar.selectbox('',('Yearly', 'Monthly', 'Weekly', 'Daily'))
         period_freq, daily_season, weekly_season = data_granularity_processing(option2)
 
         forecasting_periods = st.sidebar.slider('How many datapoint you want to forecast:', 1, 365)
