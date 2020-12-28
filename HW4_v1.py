@@ -23,6 +23,7 @@ def use_own_dataset(df):
         target_column = df.columns[1]
     else:
         target_column = df.columns[0]
+        target_column = df.columns[0]
 
 #    df[date_column] = df[date_column].apply(lambda x: DT.datetime.strptime(x,'%Y-%m-%d').date())
 
@@ -98,14 +99,22 @@ def forecasting(data, forecasting_periods, period_freq, daily_season, weekly_sea
 #    st.write(future)
     forecast = model.predict(future)
     st.write("Forecast for future periods:")
-    st.write(forecast.set_index('ds')[['yhat']][-forecasting_periods:])
+
+    forecast.rename(columns={'yhat': 'Predictions'}, inplace=True)
+    st.write(forecast.set_index('ds')[['Predictions']][-forecasting_periods:])
 
     st.write('Make a chart with forecasted values and data validation')
-    fig = plot_plotly(model, forecast, trend=True, changepoints=True, xlabel='date', ylabel='quantities', figsize=(1200,800))
+    val = forecast.set_index('ds')[['Predictions']].join(data.set_index('ds'))
+#    val.rename(columns={'yhat': 'Predictions'}, inplace=True)
+    val.rename(columns={'y': 'Actuals'}, inplace=True)
+#    fig = plot_plotly(model, forecast, trend=True, changepoints=True, xlabel='date', ylabel='quantities', figsize=(1200,800))
                 # custom styles
-    fig.update_traces(mode='lines', selector=dict(name='Actual'))
-    fig.update_layout(title_text=accuracy_mape)
-    fig.show()
+#    fig.update_traces(mode='lines', selector=dict(name='Actual'))
+#    fig.update_layout(title_text=accuracy_mape)
+#    fig.show()
+
+    chart_data = pd.DataFrame(val, columns=['Predictions', 'Actuals'])
+    st.line_chart(chart_data)
 
 def main():
     st.title('This tool helps you to make brief forecast for time series using fbprophet:')
